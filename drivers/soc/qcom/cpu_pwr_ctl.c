@@ -78,6 +78,8 @@ static int power_on_l2_msm8916(struct device_node *l2ccc_node, u32 pon_mask,
 		iounmap(l2_base);
 		return 0;
 	}
+	pr_debug("smp debug: %s %s \n", __func__, __LINE__);
+	pr_debug("smp debug: l2_base = 0x%x \n", l2_base);
 
 	/* Close L2/SCU Logic GDHS and power up the cache */
 	writel_relaxed(0x10D700, l2_base + L2_PWR_CTL);
@@ -138,6 +140,9 @@ static int kick_l2spm_8994(struct device_node *l2ccc_node,
 	ret = of_address_to_resource(l2ccc_node, 1, &res);
 	if (ret)
 		goto bail_l2_pwr_bit;
+
+	pr_debug("smp debug: %s %d\n", __func__, __LINE__ );
+	pr_debug("smp debug: res.start = %u \n", (u32)res.start);
 
 	/* L2 is executing sleep state machine,
 	 * let's softly kick it awake
@@ -203,6 +208,8 @@ static int power_on_l2_msm8994(struct device_node *l2ccc_node, u32 pon_mask,
 		pr_err("Error turning on power rail.\n");
 		return -EFAULT;
 	}
+	pr_debug("smp debug: %s %d\n", __func__, __LINE__ );
+	pr_debug("smp debug: l2_base = 0x%x \n", l2_base);
 
 	/* Enable L1 invalidation by h/w */
 	writel_relaxed(0x00000000, l2_base + L1_RST_DIS);
@@ -277,6 +284,7 @@ static int power_on_l2_cache(struct device_node *l2ccc_node, int cpu)
 	if (ret)
 		return ret;
 
+	pr_debug("smp debug: %s %d\n", __func__, __LINE__ );
 	for (i = 0; i < ARRAY_SIZE(l2ccc_info); i++) {
 		const struct msm_l2ccc_of_info *ptr = &l2ccc_info[i];
 
@@ -320,6 +328,8 @@ int msm8994_cpu_ldo_config(unsigned int cpu)
 			cpu);
 		BUG_ON(1);
 	}
+	pr_debug("smp debug: %s %d\n", __func__, __LINE__ );
+	pr_debug("smp debug: ldo_bhs_reg_base = 0x%x \n", ldo_bhs_reg_base);
 
 	/* Set LDO_BHS_PWR control register to hardware reset value */
 	val = readl_relaxed(ldo_bhs_reg_base + APC_LDO_BHS_PWR_CTL);
@@ -428,6 +438,8 @@ int msm8994_unclamp_secondary_arm_cpu(unsigned int cpu)
 		goto out_acc_reg;
 	}
 
+	pr_debug("smp debug: %s %d\n", __func__, __LINE__ );
+	pr_debug("smp debug: acc_reg = 0x%x \n", acc_reg);
 	/* Assert head switch enable few */
 	writel_relaxed(0x00000001, acc_reg + CPU_PWR_GATE_CTL);
 	mb();
@@ -531,6 +543,8 @@ int msm_unclamp_secondary_arm_cpu(unsigned int cpu)
 		ret = -ENOMEM;
 		goto out_acc_reg;
 	}
+	pr_debug("smp debug: %s %d\n", __func__, __LINE__ );
+	pr_debug("smp debug: reg = 0x%x \n", reg);
 
 	/* Assert Reset on cpu-n */
 	writel_relaxed(0x00000033, reg + CPU_PWR_CTL);
@@ -601,6 +615,8 @@ int msm_unclamp_secondary_arm_cpu_sim(unsigned int cpu)
 		goto out_acc;
 	}
 
+	pr_debug("smp debug: %s %d\n", __func__, __LINE__ );
+	pr_debug("smp debug: reg = 0x%x \n", reg);
 	writel_relaxed(0x800, reg + CPU_PWR_CTL);
 	writel_relaxed(0x3FFF, reg + CPU_PWR_GATE_CTL);
 	mb();
